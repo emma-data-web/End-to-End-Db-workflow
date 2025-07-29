@@ -1,0 +1,14 @@
+# the evn file for database infos
+.env
+# Ignore Python-related junk
+__pycache__/
+.ipynb_checkpoints/
+env/
+
+# VSCode settings
+.vscode/
+
+# incase of any csv and xlsx files
+
+*.csv
+*.xlsx
