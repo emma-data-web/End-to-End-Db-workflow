@@ -1,5 +1,57 @@
 from db_pull import get_data
+import pandas as pd
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.pipeline import Pipeline
+from lightgbm import LGBMClassifier
+from sklearn.model_selection import train_test_split
 
-df = get_data().head(10)
 
-print(df)
+
+df = get_data()
+
+features = ['Pclass','Sex','Age','SibSp','Parch','Fare','Embarked']
+
+cat_features = ['Sex', 'Embarked']
+
+#target = ['Survived']
+
+for col in cat_features:
+  df[col] = df[col].astype('category')
+
+
+x_train, x_test, y_train, y_test = train_test_split(df[features], df['Survived'],
+test_size=0.2, random_state=101)
+
+model = LGBMClassifier()
+
+model_pipeline = Pipeline(steps=[
+  ('model', model)
+])
+
+param_dist = {
+  'model__num_leaves': [30,50],
+  'model__learning_rate': [0,0.5,1],
+  'model__n_estimators': [100,200]
+}
+
+grid = RandomizedSearchCV(
+  estimator= model_pipeline,
+  param_distributions= param_dist,
+  n_iter=5,
+  cv=4,
+  scoring='accuracy',
+  n_jobs=-1
+)
+
+
+grid.fit(x_train,y_train)
+
+
+print(grid.predict(x_test))
+
+print(model_pipeline.named_steps['model'])
+print(hasattr(model_pipeline.named_steps['model'], 'booster_'))
+
+
+
+
