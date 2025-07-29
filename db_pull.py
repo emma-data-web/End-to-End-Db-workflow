@@ -13,4 +13,7 @@ def get_data():
   return df
 
 
+
+
+print(get_data)
 print(get_data().head())
